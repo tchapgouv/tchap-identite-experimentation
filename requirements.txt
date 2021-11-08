@@ -1,0 +1,8 @@
+asgiref==3.4.1
+Django==3.2.9
+pycairo==1.20.1
+PyGObject==3.42.0
+python-dotenv==0.19.1
+pytz==2021.3
+six==1.16.0
+sqlparse==0.4.2
