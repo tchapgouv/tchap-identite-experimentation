@@ -14,6 +14,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+#    'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'matrix_connect'
@@ -47,6 +49,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_tools.middlewares.ThreadLocal.ThreadLocalMiddleware', # Enable request object access globally
+    #'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -73,17 +77,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tchap_id.wsgi.application'
 
-
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+#}
+
+DATABASES = {}
+
+CACHES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -103,6 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#AUTH_USER_MODEL = 'matrix_connect.MatrixUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -126,6 +139,9 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/profile'
 
+# TODO : à virer, l'url du homeserver doit être récupérée d'un serveur d'ID
+MATRIX_LOGIN_URL = 'https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/r0/login'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -135,3 +151,5 @@ AUTHENTICATION_BACKENDS = [
     #'django.contrib.auth.backends.ModelBackend',
     'matrix_connect.backends.MatrixBackend'
 ]
+
+AUTH_USER_MODEL = 'matrix_connect.MatrixUser'

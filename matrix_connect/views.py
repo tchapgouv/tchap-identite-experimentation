@@ -21,16 +21,27 @@ from django.http import HttpResponseRedirect
 #from django.shortcuts import resolve_url
 #from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
+from .forms import LoginForm
+from django.core.cache import cache
 
 UserModel = get_user_model()
 
 @login_required
 def profile(request):
-    return HttpResponse("Hola hola ! vous etes connecté en tant que %s" % request.user)
+    #user = cache.get(request.username)
+    #return HttpResponse(user)
+    user = cache.get(request.user)
+    text = '''
+        Vous êtes connecté en tant que :<br/>
+        Email : {email}<br/>
+        Matrix ID : {matrix_id}<br/>
+    '''.format(email=user.email, matrix_id=user.matrix_user_id)
+    return HttpResponse(text)
 
 class MatrixLoginView(LoginView):
 
     template_name = 'login.html'
+    form_class = LoginForm
 
     def form_valid(self, form):
         auth_login(self.request, form.get_user(), backend='matrix_connect.backends.MatrixBackend')
